@@ -1,0 +1,431 @@
+***
+To open browserSync 
+npm install browser-sync -g
+D:\Web Development\conFusion> browser-sync start --server --files "*"
+
+
+
+git init
+git add . 
+git status 
+
+https://www.coursera.org/learn/bootstrap-4/supplement/YF9i0/building-and-deployment-npm-scripts-additional-resources
+
+
+npm init
+npm install lite-server --save-dev
+
+
+create a file in your project directory named .gitignore
+write node_modules and save
+
+npm install bootstrap@4.0.0 --save
+npm install jquery@3.3.1 popper.js@1.12.9 --save
+
+<!-- Required meta tags always come first -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+
+     <!-- jQuery first, then Popper.js, then Bootstrap JS. -->
+    <script src="node_modules/jquery/dist/jquery.slim.min.js"></script>
+    <script src="node_modules/popper.js/dist/umd/popper.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+
+
+    npm install font-awesome@4.7.0 --save
+    npm install bootstrap-social@5.1.1 --save
+
+    <link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="node_modules/bootstrap-social/bootstrap-social.css">
+
+
+   npm install node-sass
+
+  Package.json =>
+  	"scss": "node-sass -o css/ css/"
+   
+   npm run scss
+
+
+   npm install onchange
+   npm i --save-dev parallelshell
+
+
+    "scripts": {
+    "start": "npm run watch:all",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lite": "lite-server",
+    "scss": "node-sass -o css/ css/",
+    "watch:scss": "onchange \"css/*.scss\" -- npm run scss",
+    "watch:all": "parallelshell \"npm run watch:scss\" \"npm run lite\" "
+
+  },
+
+  for the error in parallelshell : https://github.com/darkguy2008/parallelshell/issues/69 
+
+    .. Now everything is working very well !! 
+
+
+    npm install --save-dev rimraf@2.6.2
+
+   Package.json  =>  
+	"clean": "rimraf dist",
+
+
+   npm -g install copyfiles@2.0.0
+
+   Package.json => 
+	"copyfonts": "copyfiles -f node_modules/font-awesome/fonts/* dist/fonts",
+
+
+   npm -g install imagemin-cli@3.0.0
+
+  Package.json => 
+	"imagemin": "imagemin img/* -o dist/img"
+
+
+ * Open .gitignore
+  dist
+
+
+npm install --save-dev usemin-cli@0.5.1 cssmin@0.4.3 uglifyjs@2.4.11 htmlmin@0.0.7
+
+package.json => 
+	"usemin": "usemin contactus.html -d dist --htmlmin -o dist/contactus.html &&
+      	  usemin aboutus.html -d dist --htmlmin -o dist/aboutus.html && usemin index.html -d dist --htmlmin -o dist/index.html",
+	"build": "npm run clean && npm run imagemin && npm run copyfonts && npm run usemin"
+
+
+
+Open index.html and surround the css links inclusion code as follows:
+ 
+ 
+ 
+<!-- build:css css/main.css -->
+<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min
+      .css">
+<link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.min
+      .css">
+<link rel="stylesheet" href="node_modules/bootstrap-social/bootstrap-social
+      .css">
+<link href="css/styles.css" rel="stylesheet">
+<!-- endbuild -->
+ 
+
+  
+<!-- build:js js/main.js -->
+<script src="node_modules/jquery/dist/jquery.slim.min.js"></script>
+<script src="node_modules/popper.js/dist/umd/popper.min.js"></script>
+<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="js/scripts.js"></script>
+<!-- endbuild -->
+
+
+
+npm run build
+
+Now a dist folder is made !!
+
+*using the lite server
+
+npm run lite
+
+and then go to localhost:3000/dist/index.html !!!!!
+
+* To Remove the dist folder :
+	npm run clean 
+
+
+
+* GRUNT AND GULB
+
+
+GRUNT : 
+
+npm install -g grunt-cli    :GLOBALY
+
+npm install grunt --save-dev
+
+
+*Make a file called GruntFile.js:
+
+npm install grunt-sass@2.1.0 --save-dev
+(npm install --save-dev node-sass grunt-sass)  :other option
+
+npm install time-grunt@1.4.0 --save-dev
+(npm install --save-dev time-grunt)
+
+npm install jit-grunt@0.10.0 --save-dev
+(npm install --save-dev jit-grunt)  :using for loading grunt plugins whenever it's required
+
+* I added  const sass = require('node-sass') in Gruntfile.js, at module exports
+ & grunt.initConfig({
+        sass:{
+            options: {
+                implementation: sass,
+                sourceMap: true
+            },
+
+ run : grunt css
+
+
+
+npm install grunt-contrib-watch --save-dev
+
+npm install grunt-browser-sync --save-dev
+
+Another terminal tab **
+run :grunt
+
+*second part :
+
+npm install --save-dev grunt-contrib-copy
+npm install --save-dev grunt-contrib-clean
+
+"Gruntfile" =>
+copy: {
+            html:{
+                files: [{
+                    expand:true,
+                    dot:true,
+                    cwd:'./',
+                    src: ['*.html'],
+                    dest:'dist'
+                }]
+            },
+            fonts: {
+                files:[{
+                    expand:true,
+                    dot:true,
+                    cwd:'node-modules/font-awesome',
+                    src:['fonts/*.*'],
+                    dest:'dist'
+                }]
+            }
+        },
+        clean: {
+            build: {
+                src: ['dist/']
+            }
+        }
+
+
+npm install --save-dev grunt-contrib-imagemin
+
+"Gruntfile" =>
+imagemin: {
+            dynamic: {
+                files: [{
+                    expand:true,
+                    dot:true,
+                    cwd:'./',
+                    src : ['img/*.{png,jpg,gif}'],
+                    dest:'dist'
+                }]
+            }
+        }
+
+grunt.registerTask('build', [
+        'clean',
+        'copy',
+        'imagemin'
+    ]);
+
+    run : grunt build 
+"dist is cleaned then made , and imageming"
+
+npm install --save-dev grunt-contrib-concat
+npm install --save-dev grunt-contrib-cssmin
+npm install --save-dev grunt-contrib-htmlmin
+npm install --save-dev grunt-contrib-uglify
+npm install --save-dev grunt-filerev
+npm install --save-dev grunt-usemin
+
+
+"Gruntfile" =>
+
+'use strict'
+module.exports= function (grunt){
+    // i added this to fix the error of "sass is not defined"
+    const sass = require('node-sass')
+    // Time how long tasks take. Can help when optimizing build times
+    require('time-grunt')(grunt);
+    // Automatically load required Grunt tasks
+    require('jit-grunt')(grunt, {
+        useminPrepare: 'grunt-usemin'
+    });
+        
+    // Define the configuration for all the tasks
+    grunt.initConfig({
+        sass:{
+            options: {
+                implementation: sass,
+                sourceMap: true
+            },
+            dist:{
+                files:{
+                    'css/styles.css': 'css/styles.scss'
+                }
+            }
+        },
+        watch:{
+            files: 'css/*.css', 
+            tasks:['sass']
+        },
+        browserSync:{
+            dev:{
+                bsFiles:{
+                    src:[
+                        'css/*.css',
+                        '*.html',
+                        'js/*.js'
+                    ]
+                },
+                options: {
+                    watchTask: true,
+                    sever:{
+                        baseDir: './'
+                    }
+                }
+            }
+        },
+        copy: {
+            html:{
+                files: [{
+                    expand:true,
+                    dot:true,
+                    cwd:'./',
+                    src: ['*.html'],
+                    dest:'dist'
+                }]
+            },
+            fonts: {
+                files:[{
+                    expand:true,
+                    dot:true,
+                    cwd:'node-modules/font-awesome',
+                    src:['fonts/*.*'],
+                    dest:'dist'
+                }]
+            }
+        },
+        clean: {
+            build: {
+                src: ['dist/']
+            }
+        },
+        imagemin: {
+            dynamic: {
+                files: [{
+                    expand:true,
+                    dot:true,
+                    cwd:'./',
+                    src : ['img/*.{png,jpg,gif}'],
+                    dest:'dist'
+                }]
+            }
+        },
+        useminPrepare:{
+            foo:{
+                dest: 'dist',
+                src: ['contactus.html','aboutus.html', 'index.html']
+            },
+            options:{
+                flow:{
+                    steps:{
+                        css:['cssmin'],
+                        js:['uglify']                        
+                    },
+                    post:{
+                        css: [{
+                            name: 'cssmin',
+                            createConfig: function (context,block){
+                                var generated = context.options.generated;
+                                generated.options= {
+                                    keepSpecialComments: 0, rebase:false
+                                };
+                            }
+                        }]
+                    }
+                }
+            }
+        },
+        concat:{
+            options:{
+                separator: ';'
+            },
+            dist: {   }
+        },
+        uglify: {
+            dist:{  }
+        },
+        cssmin:{
+            dist:{ }
+        },
+        filerev:{
+            options:{
+                encoding:'utf8',
+                algorithm:'md5',
+                length:20
+            },
+            release:{
+                files:[{
+                    src: [
+                        'dist/js/*.js',
+                        'dist/css/*.css'
+                    ]
+                }]
+            }
+        },
+        usemin: {
+            html:['dist/contactus.html','dist/aboutus.html', 'dist/index.html'],
+            options:{
+                assetsDirs: ['dist', 'dist/css', 'dist/js']
+            }
+        },
+        htmlmin:{
+            dist:{
+                options:{
+                    collapseWhitespace:true
+                },
+                files: {
+                    'dist/index.html': 'dist/index.html',
+                    'dist/contactus.html': 'dist/contactus.html',
+                    'dist/aboutus.html': 'dist/aboutus.html',
+                }
+            }
+        }
+    });
+    grunt.registerTask('css', ['sass']);
+    grunt.registerTask('default', ['browserSync', 'watch']);
+    grunt.registerTask('build', [
+        'clean',
+        'copy',
+        'imagemin',
+        'useminPrepare',
+        'concat',
+        'cssmin',
+        'uglify',
+        'filerev',
+        'usemin',
+        'htmlmin'
+    ]);
+};
+
+------------------------------------------------------
+
+*Gulp :
+
+npm -g install gulp
+
+npm install gulp --save-dev
+
+npm install gulp-sass --save-dev
+
+npm install browser-sync --save-dev
+

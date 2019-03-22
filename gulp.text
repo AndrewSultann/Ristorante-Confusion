@@ -1,0 +1,201 @@
+'use strict';
+
+var gulp = require('gulp'),
+    browserSync = require('browser-sync'),
+    sass = require('gulp-sass'),
+    del = require('del'),
+    imagemin= require('gulp-imagemin'),
+    uglify = require('gulp-uglify'),
+    usemin = require('gulp-usemin'),
+    rev = require('gulp-rev'),
+    cleanCss = require('gulp-clean-css'),
+    flatmap = require('gulp-flatmap'),
+    htmlmin = require('gulp-htmlmin');
+    
+
+    gulp.task('sass', function () {
+      return gulp.src('./sass/styles.scss')
+        .pipe(sass().on('error', sass.logError))
+        .pipe(gulp.dest('./css'))
+        .pipe(browserSync.stream());
+    });
+    
+    gulp.task('watch', function(){
+      
+      gulp.watch('./sass/*.scss', gulp.series('sass'));
+      browserSync.stream();
+  });
+
+   
+    gulp.task('browser-sync', function () {
+       var files = [
+          './*.html',
+          './css/*.css',
+          './img/*.{png,jpg,gif}',
+          './js/*.js'
+       ];
+    
+       browserSync.init(files, {
+          server: {
+             baseDir: "./"
+          }
+       });
+    
+    });
+
+    gulp.task('default', gulp.series('watch', function() { 
+      // default task code here
+      gulp.start('browser-sync');
+  }));
+  
+
+  gulp.task('clean', function() {
+    return del(['dist']);
+});
+
+gulp.task('copyfonts', function() {
+   gulp.src('./node_modules/font-awesome/fonts/**/*.{ttf,woff,eof,svg}*')
+   .pipe(gulp.dest('./dist/fonts'));
+});
+
+
+// Images
+gulp.task('imagemin', function() {
+  return gulp.src('img/*.{png,jpg,gif}')
+    .pipe(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true }))
+    .pipe(gulp.dest('dist/img'));
+});
+    
+gulp.task('usemin', function() {
+  return gulp.src('./*.html')
+  .pipe(flatmap(function(stream, file){
+      return stream
+        .pipe(usemin({
+            css: [ rev() ],
+            html: [ function() { return htmlmin({ collapseWhitespace: true })} ],
+            js: [ uglify(), rev() ],
+            inlinejs: [ uglify() ],
+            inlinecss: [ cleanCss(), 'concat' ]
+        }))
+    }))
+    .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('build',gulp.series('clean'), function() {
+    gulp.start('copyfonts','imagemin','usemin');
+});
+
+
+-------------------------------------------------------------
+FINALLLLLL : Workingg !!!
+
+
+// var gulp = require("gulp")
+//instead of calling all the gulp package i can call some of it to be fast
+const {src, dest, task, watch, series, parallel} = require('gulp');
+
+// i have to remove every gulp. decleration i used
+
+
+var sass = require('gulp-sass'),
+    browserSync = require('browser-sync').create();
+    // reload = browserSync.reload; // this will make an error at the future so i need to make a task
+    
+
+var styleSCSS = 'sass/*.scss',
+    styleDist = './dist/css',
+    jsSRC = 'js/*.js',
+    jsDIST = './dist/js',
+    styleWatch = 'sass/**/*.scss',
+    jsWatch = 'js//**/*.js';
+    
+
+
+
+
+
+    function browser_sync(){
+      browserSync.init({
+        server:{
+          baseDir: "./"
+        }
+      });
+    
+    };
+   
+
+
+//  // //if i don't want to open browsersync from local host i want to make a proxy !
+//         // // there might be a problem here!!!
+        
+//         // open: false,
+//         // injectChanges:true,
+//         // proxy: 'http://gulp.dev',
+
+
+
+function reload(done){
+  browserSync.reload();
+  done();
+}
+
+
+
+ function css(done){
+    return src(styleSCSS)
+        .pipe(sass({
+          errorLogToConsole : true,
+          outputStyle : 'compressed'
+        }))
+        .on('error', console.error.bind( console))
+        .pipe(dest(styleDist))
+        .pipe(browserSync.stream())
+    done()    
+
+};
+
+function js (done){
+  return  src(jsSRC)
+              .pipe(dest(jsDIST))
+              .pipe(browserSync.stream())
+  done();
+}
+
+
+
+
+// // series to work one after another , parallel to work both at the same time
+// gulp.task('default', gulp.series('css', 'js'))  //working
+
+
+// //watch
+
+// //first line :when i start the task it will trigger the (default)
+// gulp.task('watch', ['default', 'browser-sync'], function(){ 
+//   // the watch will be running at the background watching the file i declared
+//   //  and when it changes it will trigger (CSS)
+//   gulp.watch(styleWatch, ['css']); // no reloading so i can inject CSS changes (super cool)
+//   gulp.watch(jsWatch , ['js', reload]);
+//   gulp.watch(htmlWatch, reload)
+//   //not working !!
+// })
+
+
+// gulp 4 updates !!
+// check web pack technology its super fast compared to gulp !!
+
+
+function watch_files(){
+  watch(styleWatch, series(css, reload))
+  watch(jsWatch, series(js, reload))
+  //if i am adding more task i shoud add them here too
+}
+
+
+
+task('css', css);
+task('js', js);
+
+task('default', parallel(css, js))  
+
+task('watch', parallel(browser_sync, watch_files));
